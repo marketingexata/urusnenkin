@@ -315,7 +315,7 @@ const CK='exata_c1';
 function clean(h){const d=new DOMParser().parseFromString('<body><main>'+h+'</main></'+'body>','text/html');
 d.querySelectorAll('script,style,iframe,object,embed,link,meta,form,base,frame,template').forEach(x=>x.remove());
 d.querySelectorAll('animate,set,animateTransform').forEach(x=>{if(/^(href|xlink:href|on)/i.test(x.getAttribute('attributeName')||''))x.remove()});
-const okI=/^(data:image\/(png|jpe?g|webp|gif);base64,|https:\/\/(lh3\.googleusercontent\.com|drive\.google\.com)\/|img\/[\w.-]+$)/i;
+const okI=/^(data:image\/(png|jpe?g|webp|gif);base64,|https:\/\/|img\/[\w.-]+$)/i;
 d.querySelectorAll('*').forEach(e=>[...e.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=a.value.trim();
 if(n.startsWith('on')||n=='srcdoc'||n=='formaction')e.removeAttribute(a.name);
 else if((n=='href'||n=='xlink:href')&&!/^(https?:|#|mailto:|tel:)/i.test(v))e.removeAttribute(a.name);
