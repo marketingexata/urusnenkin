@@ -239,7 +239,7 @@ h1{font-weight:700}
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="nav"><div class="pg"><i id="pg"></i></div><div class="wrap"><button class="btn b4" id="back" hidden>‹ Kembali</button><div class="st"><b id="st1"></b><span id="st2"></span></div><button class="btn b2" id="next" aria-disabled="true">🔒 Berikutnya ›</button></div></div>
-<script id="cfg">window.ADMIN=false</script>
+<script id="cfg">window.ADMIN=false;window.API=""</script>
 <script>
 const WA="62XXXXXXXXXX"; // GANTI dengan nomor WhatsApp Exata (format 628xxxxxxxxxx, tanpa + atau 0 di depan)
 const MIN_READ=5; // detik minimal membaca tiap halaman
@@ -252,15 +252,16 @@ function cu(el,to){if(RM){el.textContent=fmt(to);return}const s=performance.now(
 function sim(an){const n=parseInt(($('#nom').value||'').replace(/\D/g,''))||0,a=Math.round(n*.15),t=a+6500,R=[['Nominal nenkin 20%',n,''],['Biaya administrasi 15%',a,''],['Biaya perwakilan pajak',3500,'Biaya baku Jepang'],['Biaya Speed Service',3000,'Biaya baku Jepang'],['Total potongan',t,'tot'],['Nenkin 20% yang kamu terima',Math.max(0,n-t),'net']];
 $('#sim').innerHTML=R.map(r=>`<tr class="${r[2]=='tot'||r[2]=='net'?r[2]:''}"><td>${r[0]}${r[2]&&r[2]!='tot'&&r[2]!='net'?`<span class="tag">${r[2]}</span>`:''}</td><td>${fmt(r[1])}</td></tr>`).join('');
 if(an)$$('#sim tr').forEach((tr,i)=>cu(tr.lastChild,R[i][1]))}
-$('#nom').oninput=e=>{const v=e.target.value.replace(/\D/g,'').slice(0,9);e.target.value=v?(+v).toLocaleString('id-ID'):'';sim(false)};
-$('#cp').onclick=async()=>{const v=$('#rek').textContent;try{await navigator.clipboard.writeText(v)}catch(e){const a=document.createElement('textarea');a.value=v;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove()}toast('Nomor rekening tersalin ✓')};
-$$('.wa').forEach(a=>a.onclick=e=>{if(/X/.test(WA)){e.preventDefault();toast('Nomor WhatsApp belum diatur oleh admin');return}a.href='https://wa.me/'+WA+'?text='+encodeURIComponent(a.dataset.m);a.target='_blank';a.rel='noopener'});
-$$('[data-a]').forEach(b=>b.onclick=()=>{$('#ry').classList.toggle('on',b.dataset.a=='y');$('#rn').classList.toggle('on',b.dataset.a=='n')});
-$('#tostep4').onclick=()=>go(3);
 function confetti(){if(RM||ADMIN)return;const c=['#E8A64B','#f1deb9','#ffc46b','#7fbf9a','#d9b98a'];for(let i=0;i<46;i++){const e=document.createElement('i');e.className='cf';e.style.cssText=`left:${Math.random()*100}vw;background:${c[i%5]};animation-delay:${Math.random()*.8}s;animation-duration:${2+Math.random()*1.6}s;border:1px solid rgba(0,0,0,.1)`;document.body.appendChild(e);setTimeout(()=>e.remove(),4500)}}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');$$('.in .bar,.bar.in').forEach(()=>{});io.unobserve(e.target)}}),{threshold:.15});
+function bind(){$('#nom').oninput=e=>{const v=e.target.value.replace(/\D/g,'').slice(0,9);e.target.value=v?(+v).toLocaleString('id-ID'):'';sim(false)};
+$('#cp').onclick=async()=>{const v=$('#rek').textContent;try{await navigator.clipboard.writeText(v)}catch(e){const a=document.createElement('textarea');a.value=v;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove()}toast('Nomor rekening tersalin ✓')};
+$$('.wa').forEach(a=>a.onclick=e=>{if(/X/.test(WA)){e.preventDefault();toast('Nomor WhatsApp belum diatur oleh admin');return}a.href='https://wa.me/'+WA+'?text='+encodeURIComponent(a.dataset.m);a.target='_blank';a.rel='noopener'});
+$$('.ans [data-a]').forEach(b=>b.onclick=()=>{$('#ry').classList.toggle('on',b.dataset.a=='y');$('#rn').classList.toggle('on',b.dataset.a=='n')});
+$('#tostep4').onclick=()=>go(3);
 $$('.rv').forEach(e=>io.observe(e));
-$$('.bar').forEach(b=>{const o=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){b.classList.add('in');o.disconnect()}}),{threshold:.6});o.observe(b)});
+$$('.bar').forEach(b=>{const o=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){b.classList.add('in');o.disconnect()}}),{threshold:.6});o.observe(b)});}
+bind();
 function dots(){$('#dots').innerHTML=stp().map((_,i)=>{const ok=i<=furthest();return`<button class="dot ${done[i]?'ok':''}" ${i==cur?'aria-current="step"':''} ${ok?'':'disabled'} aria-label="Langkah ${i+1}" data-i="${i}">${done[i]&&i!=cur?'✓':i+1}</button>`}).join('');$$('.dot').forEach(b=>b.onclick=()=>go(+b.dataset.i))}
 function furthest(){if(ADMIN)return N-1;const f=done.indexOf(false);return f<0?N-1:f}
 function go(i){if(i<0||i>=N||i>furthest())return;document.documentElement.style.setProperty('scroll-behavior','auto');document.body.style.setProperty('--dx',(i>=cur?'30px':'-30px'));stp()[cur].classList.remove('on');cur=i;stp()[cur].classList.add('on');scrollTo(0,0);t0=Date.now();
@@ -277,7 +278,24 @@ $('#next').onclick=e=>{if(!done[cur]){const n=e.currentTarget;n.classList.remove
 $('#back').onclick=()=>go(cur-1);
 addEventListener('scroll',upd,{passive:true});addEventListener('resize',upd);setInterval(upd,200);
 addEventListener('keydown',e=>{if(ADMIN)return;if(e.key=='ArrowRight'&&done[cur]&&cur<N-1)go(cur+1);if(e.key=='ArrowLeft')go(cur-1)});
+const CK='exata_c1';
+function clean(h){const d=new DOMParser().parseFromString('<body><main>'+h+'</main></'+'body>','text/html');
+d.querySelectorAll('script,style,iframe,object,embed,link,meta,form,base,frame,template').forEach(x=>x.remove());
+d.querySelectorAll('animate,set,animateTransform').forEach(x=>{if(/^(href|xlink:href|on)/i.test(x.getAttribute('attributeName')||''))x.remove()});
+const okI=/^(data:image\/(png|jpe?g|webp|gif);base64,|https:\/\/(lh3\.googleusercontent\.com|drive\.google\.com)\/)/i;
+d.querySelectorAll('*').forEach(e=>[...e.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=a.value.trim();
+if(n.startsWith('on')||n=='srcdoc'||n=='formaction')e.removeAttribute(a.name);
+else if((n=='href'||n=='xlink:href')&&!/^(https?:|#|mailto:|tel:)/i.test(v))e.removeAttribute(a.name);
+else if(n=='src'&&!okI.test(v))e.removeAttribute(a.name);
+else if(n=='style'&&/(url\s*\(|expression|javascript:)/i.test(v))e.removeAttribute(a.name)}));
+return d.querySelector('main').innerHTML}
+function applyC(h){$('main').innerHTML=clean(h);stp().forEach((s,i)=>s.classList.toggle('on',i==cur));bind();dots();if(cur==2)sim(true)}
+window.applyC=applyC;
+async function remote(){if(!window.API)return;let c=null;try{c=JSON.parse(localStorage.getItem(CK))}catch(e){}
+if(c&&c.html)applyC(c.html);
+try{const r=await fetch(API+'?a=get&v='+encodeURIComponent(c?c.v:''));const j=await r.json();if(j.html){applyC(j.html);try{localStorage.setItem(CK,JSON.stringify({v:j.v,html:j.html}))}catch(e){}}}catch(e){}}
 dots();upd();
+if(!ADMIN)remote();
 </script>
 </body>
 </html>
